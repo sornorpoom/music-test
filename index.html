@@ -1,0 +1,1794 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Music Practice Coach 🎸🥁 (Guitar & Drum Online)</title>
+  
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- html2pdf.js for 1-Page A4 PDF Generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --secondary: #06b6d4;
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --card-sub: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: #475569;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Kanit', sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1100px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    /* Header */
+    header {
+      text-align: center;
+      padding: 10px 0;
+      position: relative;
+    }
+    header h1 {
+      font-size: 26px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #a5b4fc, #38bdf8, #f472b6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+    header p {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-top: 4px;
+    }
+    .header-actions {
+      position: absolute;
+      right: 0;
+      top: 10px;
+    }
+    @media (max-width: 600px) {
+      .header-actions {
+        position: static;
+        margin-top: 10px;
+      }
+    }
+
+    /* Mode Selector Tabs */
+    .mode-selector {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      background: var(--card-bg);
+      padding: 6px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+    }
+    .mode-btn {
+      background: transparent;
+      color: var(--text-muted);
+      border: none;
+      padding: 12px 8px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .mode-btn i { font-size: 18px; }
+    .mode-btn.active {
+      background: var(--primary);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+    }
+    .mode-btn[data-mode="drum_acoustic"].active {
+      background: linear-gradient(135deg, #d97706, #f59e0b);
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+    }
+    .mode-btn[data-mode="drum_midi"].active {
+      background: linear-gradient(135deg, #059669, #10b981);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+    }
+
+    /* Main Grid Layout */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+    @media (min-width: 860px) {
+      .main-grid {
+        grid-template-columns: 1.1fr 1fr;
+      }
+    }
+
+    /* Card */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+    }
+    .card-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Inputs & Form */
+    .form-group {
+      margin-bottom: 12px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      font-weight: 500;
+    }
+    .input-control {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      color: var(--text);
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .input-control:focus {
+      border-color: var(--secondary);
+    }
+
+    /* YouTube Section */
+    .yt-wrapper {
+      position: relative;
+      width: 100%;
+      padding-bottom: 56.25%; /* 16:9 */
+      height: 0;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #000;
+      margin: 10px 0;
+      border: 1px solid var(--border);
+    }
+    .yt-wrapper iframe, .yt-wrapper #ytPlayer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    .yt-placeholder {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #1e293b, #0f172a);
+      color: var(--text-muted);
+      text-align: center;
+      padding: 20px;
+    }
+    .yt-placeholder i {
+      font-size: 40px;
+      color: #ef4444;
+      margin-bottom: 10px;
+    }
+    .yt-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+      align-items: center;
+    }
+    .speed-btn-group {
+      display: flex;
+      gap: 4px;
+      margin-left: auto;
+    }
+    .speed-btn {
+      background: var(--card-sub);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .speed-btn.active {
+      background: var(--secondary);
+      color: #000;
+      font-weight: 700;
+      border-color: var(--secondary);
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+    .btn-block { width: 100%; }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-start { background: #10b981; color: white; }
+    .btn-start:hover { background: #059669; }
+    .btn-stop { background: #ef4444; color: white; }
+    .btn-stop:hover { background: #dc2626; }
+    .btn-reset { background: #475569; color: #f1f5f9; }
+    .btn-reset:hover { background: #334155; }
+    .btn-pdf { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4); }
+    .btn-pdf:hover { background: #b91c1c; }
+    .btn-sm { padding: 6px 12px; font-size: 12px; border-radius: 6px; }
+
+    /* Live Display */
+    .live-display-box {
+      background: linear-gradient(180deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));
+      border: 2px dashed #6366f1;
+      border-radius: 14px;
+      padding: 24px 16px;
+      text-align: center;
+      margin-bottom: 16px;
+      position: relative;
+      min-height: 180px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    .live-display-box.drum-box { border-color: #f59e0b; }
+    .live-display-box.midi-box { border-color: #10b981; }
+
+    /* Guitar Note */
+    .note-big {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 58px;
+      font-weight: 700;
+      color: #38bdf8;
+      line-height: 1.1;
+      text-shadow: 0 0 20px rgba(56, 189, 248, 0.5);
+    }
+    .freq-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      background: var(--card-sub);
+      color: #94a3b8;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-top: 6px;
+      display: inline-block;
+    }
+
+    .tuner-bar-wrapper {
+      width: 80%;
+      max-width: 260px;
+      height: 8px;
+      background: #334155;
+      border-radius: 4px;
+      margin-top: 10px;
+      position: relative;
+    }
+    .tuner-center {
+      position: absolute;
+      top: -3px;
+      left: 50%;
+      width: 2px;
+      height: 14px;
+      background: #10b981;
+      transform: translateX(-50%);
+    }
+    .tuner-needle {
+      position: absolute;
+      top: -4px;
+      left: 50%;
+      width: 10px;
+      height: 16px;
+      background: #38bdf8;
+      border-radius: 3px;
+      transform: translateX(-50%);
+      transition: left 0.1s ease;
+    }
+
+    /* Drum Pads */
+    .drum-pads {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      width: 100%;
+      max-width: 380px;
+      margin-top: 10px;
+    }
+    .drum-pad {
+      background: var(--card-sub);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 6px;
+      text-align: center;
+      transition: all 0.08s ease;
+    }
+    .drum-pad .pad-icon { font-size: 22px; margin-bottom: 2px; }
+    .drum-pad .pad-name { font-size: 11px; font-weight: 600; color: var(--text-muted); }
+    .drum-pad .pad-count { font-family: 'JetBrains Mono', monospace; font-size: 16px; font-weight: 700; color: var(--text); }
+    
+    .drum-pad.hit-kick {
+      background: #dc2626 !important;
+      border-color: #f87171 !important;
+      transform: scale(1.08);
+      box-shadow: 0 0 20px rgba(220, 38, 38, 0.7);
+    }
+    .drum-pad.hit-snare {
+      background: #d97706 !important;
+      border-color: #fbbf24 !important;
+      transform: scale(1.08);
+      box-shadow: 0 0 20px rgba(217, 119, 6, 0.7);
+    }
+    .drum-pad.hit-hihat {
+      background: #0284c7 !important;
+      border-color: #38bdf8 !important;
+      transform: scale(1.08);
+      box-shadow: 0 0 20px rgba(2, 132, 199, 0.7);
+    }
+
+    /* Meter */
+    .meter-container {
+      width: 100%;
+      height: 8px;
+      background: var(--bg);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 14px;
+      border: 1px solid var(--border);
+    }
+    .meter-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #10b981, #f59e0b, #ef4444);
+      transition: width 0.05s ease;
+    }
+
+    /* Quick Stats */
+    .quick-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .stat-pill {
+      background: var(--card-sub);
+      padding: 10px 8px;
+      border-radius: 10px;
+      text-align: center;
+      border: 1px solid var(--border);
+    }
+    .stat-pill .label { font-size: 11px; color: var(--text-muted); }
+    .stat-pill .value { font-family: 'JetBrains Mono', monospace; font-size: 18px; font-weight: 700; color: var(--text); }
+
+    /* Feedback Card */
+    .feedback-card {
+      display: none;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+    }
+    .feedback-score-box {
+      background: linear-gradient(135deg, rgba(79, 70, 229, 0.2), rgba(6, 182, 212, 0.2));
+      border: 1px solid var(--primary);
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    .score-number {
+      font-size: 42px;
+      font-weight: 700;
+      color: #38bdf8;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .feedback-item {
+      background: var(--card-sub);
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-bottom: 10px;
+      border-left: 4px solid var(--border);
+    }
+    .feedback-item.strength { border-left-color: var(--success); }
+    .feedback-item.improve { border-left-color: var(--warning); }
+    .feedback-item.drill { border-left-color: var(--secondary); }
+    .feedback-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .feedback-title.strength { color: var(--success); }
+    .feedback-title.improve { color: var(--warning); }
+    .feedback-title.drill { color: var(--secondary); }
+    .feedback-desc { font-size: 13px; color: #cbd5e1; line-height: 1.5; }
+
+    .midi-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: #334155;
+      color: #94a3b8;
+      margin-bottom: 10px;
+    }
+    .midi-badge.connected {
+      background: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+      border: 1px solid #059669;
+    }
+
+    .device-tip {
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 12px;
+      color: #bae6fd;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 12px;
+      padding: 20px 0;
+      margin-top: auto;
+    }
+
+    /* =========================================================
+       EXACT 1-PAGE A4 PDF PRINT / EXPORT TEMPLATE
+    ========================================================= */
+    #pdfPrintTemplate {
+      display: none; /* Hidden on normal screen, rendered by html2pdf / print */
+      width: 210mm;
+      min-height: 295mm;
+      max-height: 297mm;
+      padding: 14mm 16mm;
+      background: #ffffff;
+      color: #1e293b;
+      font-family: 'Sarabun', 'Kanit', sans-serif;
+      box-sizing: border-box;
+      position: relative;
+    }
+
+    .pdf-header {
+      border-bottom: 2px solid #3b82f6;
+      padding-bottom: 10px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .pdf-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #1e3a8a;
+    }
+    .pdf-subtitle {
+      font-size: 12px;
+      color: #64748b;
+      margin-top: 2px;
+    }
+    .pdf-badge {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      color: #1d4ed8;
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .pdf-info-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 12px;
+      font-size: 12px;
+    }
+    .pdf-info-table td {
+      padding: 6px 8px;
+      border: 1px solid #e2e8f0;
+    }
+    .pdf-info-label {
+      background: #f8fafc;
+      font-weight: 600;
+      color: #475569;
+      width: 20%;
+    }
+    .pdf-info-val {
+      color: #0f172a;
+      width: 30%;
+      word-break: break-all;
+    }
+
+    .pdf-summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .pdf-stat-box {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 8px;
+      text-align: center;
+    }
+    .pdf-stat-label {
+      font-size: 11px;
+      color: #64748b;
+      font-weight: 500;
+    }
+    .pdf-stat-num {
+      font-size: 20px;
+      font-weight: 700;
+      color: #1e40af;
+      font-family: 'JetBrains Mono', 'Kanit', sans-serif;
+    }
+
+    .pdf-section-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #1e3a8a;
+      margin-top: 10px;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .pdf-box {
+      background: #f8fafc;
+      border-left: 4px solid #3b82f6;
+      border-radius: 6px;
+      padding: 10px 12px;
+      margin-bottom: 8px;
+      font-size: 12.5px;
+      line-height: 1.5;
+    }
+    .pdf-box.green { border-left-color: #10b981; background: #f0fdf4; }
+    .pdf-box.amber { border-left-color: #f59e0b; background: #fffbeb; }
+    .pdf-box.purple { border-left-color: #8b5cf6; background: #faf5ff; }
+
+    .pdf-signatures {
+      margin-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      padding-top: 10px;
+    }
+    .pdf-sign-col {
+      width: 45%;
+      text-align: center;
+      border-top: 1px dashed #94a3b8;
+      padding-top: 8px;
+    }
+    .pdf-footer-note {
+      position: absolute;
+      bottom: 10mm;
+      left: 16mm;
+      right: 16mm;
+      font-size: 10px;
+      color: #94a3b8;
+      text-align: center;
+      border-top: 1px solid #e2e8f0;
+      padding-top: 6px;
+    }
+
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #pdfPrintTemplate, #pdfPrintTemplate * {
+        visibility: visible;
+      }
+      #pdfPrintTemplate {
+        display: block !important;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 210mm;
+        height: 297mm;
+        margin: 0;
+        padding: 12mm 15mm;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Header -->
+  <header>
+    <h1><i class="fa-solid fa-music"></i> Music Practice Coach</h1>
+    <p>ระบบตรวจจับเสียงและวิเคราะห์การซ้อม กีตาร์ & กลอง แบบเรียลไทม์ (รองรับ PC, Mobile, Tablet)</p>
+    <div class="header-actions">
+      <button class="btn btn-sm btn-reset" onclick="resetAll()" title="รีเซ็ตข้อมูลทั้งหมด">
+        <i class="fa-solid fa-rotate-left"></i> รีเซ็ตทั้งหมด (Reset All)
+      </button>
+    </div>
+  </header>
+
+  <!-- Instrument Mode Tabs -->
+  <div class="mode-selector">
+    <button class="mode-btn active" data-mode="guitar" onclick="switchMode('guitar')">
+      <i class="fa-solid fa-guitar"></i>
+      <span>🎸 กีตาร์ (Guitar)</span>
+    </button>
+    <button class="mode-btn" data-mode="drum_acoustic" onclick="switchMode('drum_acoustic')">
+      <i class="fa-solid fa-drum"></i>
+      <span>🥁 กลองชุด (Acoustic)</span>
+    </button>
+    <button class="mode-btn" data-mode="drum_midi" onclick="switchMode('drum_midi')">
+      <i class="fa-solid fa-bolt"></i>
+      <span>⚡ กลองไฟฟ้า (E-Drum/MIDI)</span>
+    </button>
+  </div>
+
+  <!-- Main Grid -->
+  <div class="main-grid">
+    <!-- Left Column: Song & YouTube Player -->
+    <div class="card">
+      <div class="card-header-row">
+        <div class="card-title">
+          <i class="fa-brands fa-youtube" style="color:#ef4444;"></i>
+          <span>1. เพลงและคลิปต้นแบบสำหรับซ้อม</span>
+        </div>
+        <button class="btn btn-sm btn-reset" onclick="resetSongSection()" title="ล้างข้อมูลเพลงและคลิป">
+          <i class="fa-solid fa-arrow-rotate-right"></i> ล้างคลิป (Reset)
+        </button>
+      </div>
+
+      <div class="form-group">
+        <label for="songTitle">ชื่อเพลงที่กำลังฝึก:</label>
+        <input type="text" id="songTitle" class="input-control" value="" placeholder="ระบุชื่อเพลงที่ต้องการฝึกซ้อม...">
+      </div>
+
+      <div class="form-group">
+        <label for="ytUrl">ลิงก์ YouTube (เพลงต้นแบบ / คอร์ด):</label>
+        <div style="display:flex; gap:8px;">
+          <input type="text" id="ytUrl" class="input-control" value="" placeholder="ระบุ URL ของคลิป YouTube เช่น https://www.youtube.com/watch?v=...">
+          <button class="btn btn-primary btn-sm" onclick="loadYouTubeVideo()">โหลดคลิป</button>
+        </div>
+      </div>
+
+      <!-- Embedded YouTube IFrame / Fallback -->
+      <div class="yt-wrapper" id="ytWrapper">
+        <div id="ytPlaceholder" class="yt-placeholder">
+          <i class="fa-brands fa-youtube"></i>
+          <p style="font-size:14px; font-weight:600; color:#f8fafc;">ยังไม่มีคลิปเพลงที่โหลด</p>
+          <p style="font-size:12px; margin-top:4px;">กรุณากรอก URL YouTube ด้านบน แล้วกดปุ่ม <strong>"โหลดคลิป"</strong></p>
+        </div>
+        <div id="ytPlayer"></div>
+      </div>
+
+      <div class="yt-controls">
+        <button class="btn btn-sm btn-primary" onclick="togglePlayVideo()" id="playPauseBtn">
+          <i class="fa-solid fa-play"></i> เล่น/หยุดคลิป
+        </button>
+        <button class="btn btn-sm btn-reset" onclick="openYouTubePopout()" title="เปิดในแท็บใหม่กรณีมีปัญหาลิขสิทธิ์ฝังคลิป">
+          <i class="fa-solid fa-arrow-up-right-from-square"></i> เปิดแท็บใหม่
+        </button>
+        <div class="speed-btn-group">
+          <span style="font-size:12px; color:var(--text-muted); align-self:center; margin-right:4px;">ความเร็ว:</span>
+          <button class="speed-btn" onclick="setSpeed(0.5)">0.5x</button>
+          <button class="speed-btn" onclick="setSpeed(0.75)">0.75x</button>
+          <button class="speed-btn active" onclick="setSpeed(1.0)" id="speed1x">1.0x</button>
+          <button class="speed-btn" onclick="setSpeed(1.25)">1.25x</button>
+        </div>
+      </div>
+
+      <div class="device-tip">
+        <i class="fa-solid fa-circle-info"></i>
+        <span><strong>เคล็ดลับ:</strong> คลิป YouTube เล่นในหน้านี้ได้โดยไมค์ไม่ตัด! หากคลิปติดลิขสิทธิ์ให้กดปุ่ม "เปิดแท็บใหม่"</span>
+      </div>
+    </div>
+
+    <!-- Right Column: Live Detection & Real-time Coach -->
+    <div class="card">
+      <div class="card-header-row">
+        <div class="card-title">
+          <i class="fa-solid fa-microphone-lines" style="color:#10b981;"></i>
+          <span id="detectorTitle">2. ตรวจจับเสียงกีตาร์แบบสด</span>
+        </div>
+        <button class="btn btn-sm btn-reset" onclick="resetPracticeStats()" title="ล้างค่าสถิติการตรวจจับ">
+          <i class="fa-solid fa-arrow-rotate-right"></i> ล้างสถิติ (Reset)
+        </button>
+      </div>
+
+      <!-- MIDI Status for E-Drum Mode -->
+      <div id="midiStatusBadge" class="midi-badge" style="display: none;">
+        <i class="fa-solid fa-plug"></i>
+        <span id="midiStatusText">กำลังค้นหาอุปกรณ์ MIDI USB...</span>
+      </div>
+
+      <!-- Live Display Box -->
+      <div class="live-display-box" id="liveDisplayBox">
+        <!-- Guitar View -->
+        <div id="guitarView">
+          <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 4px;">โน้ตที่ตรวจจับได้ (Live Note):</div>
+          <div class="note-big" id="detectedNote">-</div>
+          <div class="freq-badge" id="freqLabel">ความถี่: 0.0 Hz</div>
+          
+          <div class="tuner-bar-wrapper" title="ความแม่นยำของระดับเสียง (Tuner)">
+            <div class="tuner-center"></div>
+            <div class="tuner-needle" id="tunerNeedle"></div>
+          </div>
+        </div>
+
+        <!-- Drum View (Acoustic / MIDI) -->
+        <div id="drumView" style="display:none; width: 100%;">
+          <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 4px;">แรงตีและจังหวะกลอง (Live Drum Hits):</div>
+          <div class="drum-pads">
+            <div class="drum-pad" id="padKick">
+              <div class="pad-icon">🔴</div>
+              <div class="pad-name">KICK (กระเดื่อง)</div>
+              <div class="pad-count" id="countKick">0</div>
+            </div>
+            <div class="drum-pad" id="padSnare">
+              <div class="pad-icon">🟡</div>
+              <div class="pad-name">SNARE (สแนร์)</div>
+              <div class="pad-count" id="countSnare">0</div>
+            </div>
+            <div class="drum-pad" id="padHihat">
+              <div class="pad-icon">🔵</div>
+              <div class="pad-name">HI-HAT / ฉาบ</div>
+              <div class="pad-count" id="countHihat">0</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Volume / Audio Level Meter -->
+      <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--text-muted);">
+        <span>ระดับสัญญาณไมค์ (Input Level)</span>
+        <span id="meterPercent">0%</span>
+      </div>
+      <div class="meter-container">
+        <div class="meter-bar" id="meterBar"></div>
+      </div>
+
+      <!-- Quick Stats -->
+      <div class="quick-stats" style="margin-top:14px;">
+        <div class="stat-pill">
+          <div class="label">เวลาที่ซ้อม</div>
+          <div class="value" id="timerLabel">00:00</div>
+        </div>
+        <div class="stat-pill">
+          <div class="label" id="statCountLabel">จำนวนโน้ต</div>
+          <div class="value" id="totalHitsLabel">0</div>
+        </div>
+        <div class="stat-pill">
+          <div class="label">ความเร็วเฉลี่ย (BPM)</div>
+          <div class="value" id="bpmLabel">-</div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div style="display: flex; gap: 10px;">
+        <button class="btn btn-start btn-block" id="startBtn" onclick="startPractice()">
+          <i class="fa-solid fa-microphone"></i> เริ่มจับเสียงซ้อม
+        </button>
+        <button class="btn btn-stop btn-block" id="stopBtn" onclick="stopPractice()" style="display:none;">
+          <i class="fa-solid fa-stop"></i> หยุดและสรุปผล
+        </button>
+      </div>
+
+      <div id="saveStatus" style="font-size: 12px; color: var(--text-muted); text-align: center; margin-top: 10px;"></div>
+    </div>
+  </div>
+
+  <!-- Detailed Feedback & Report Section -->
+  <div class="feedback-card" id="feedbackCard">
+    <div class="card-header-row">
+      <div class="card-title">
+        <i class="fa-solid fa-square-poll-vertical" style="color:#38bdf8;"></i>
+        <span>3. สรุปผลการประเมินและการวิเคราะห์ข้อควรปรับปรุง</span>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-sm btn-pdf" onclick="generateA4PDF()">
+          <i class="fa-solid fa-file-pdf"></i> ดาวน์โหลดผล PDF (A4 1 หน้า)
+        </button>
+        <button class="btn btn-sm btn-reset" onclick="resetFeedbackSection()" title="ล้างผลการประเมิน">
+          <i class="fa-solid fa-arrow-rotate-right"></i> ล้างผล (Reset)
+        </button>
+      </div>
+    </div>
+
+    <div class="feedback-score-box">
+      <div style="font-size:14px; color:var(--text-muted); margin-bottom:4px;">คะแนนความสม่ำเสมอของจังหวะ (Timing Stability Score)</div>
+      <div class="score-number" id="stabilityScore">-- / 100</div>
+      <div id="scoreSummaryText" style="font-size:14px; color:var(--text);">กำลังประมวลผล...</div>
+    </div>
+
+    <!-- Strengths -->
+    <div class="feedback-item strength">
+      <div class="feedback-title strength"><i class="fa-solid fa-circle-check"></i> จุดแข็งในการเล่นรอบนี้ (Strengths):</div>
+      <div class="feedback-desc" id="strengthsText">-</div>
+    </div>
+
+    <!-- Areas for Improvement -->
+    <div class="feedback-item improve">
+      <div class="feedback-title improve"><i class="fa-solid fa-triangle-exclamation"></i> จุดที่ควรปรับปรุงเพื่อความเป๊ะ (Areas for Improvement):</div>
+      <div class="feedback-desc" id="improveText">-</div>
+    </div>
+
+    <!-- Actionable Drills -->
+    <div class="feedback-item drill">
+      <div class="feedback-title drill"><i class="fa-solid fa-lightbulb"></i> แบบฝึกหัดแนะนำสำหรับการซ้อมรอบต่อไป (Recommended Drill):</div>
+      <div class="feedback-desc" id="drillText">-</div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>Music Practice Coach • ใช้งานได้บน Chrome, Safari, Edge บน PC, iPad, iPhone และ Android</p>
+    <p style="margin-top:4px;">สามารถนำขึ้น GitHub Pages และต่อยอดระบบบันทึก Google Sheets ได้</p>
+  </footer>
+</div>
+
+<!-- =========================================================
+     EXACT 1-PAGE A4 PDF TEMPLATE (RENDERED TO PDF)
+========================================================= -->
+<div id="pdfPrintTemplate">
+  <div class="pdf-header">
+    <div>
+      <div class="pdf-title">🎸🥁 รายงานผลการฝึกซ้อมดนตรี (Music Practice Evaluation Report)</div>
+      <div class="pdf-subtitle">ระบบวิเคราะห์และประเมินทักษะการเล่นดนตรีอัจฉริยะ • Music Practice Coach</div>
+    </div>
+    <div class="pdf-badge" id="pdfInstrumentBadge">🎸 กีตาร์ (Guitar)</div>
+  </div>
+
+  <!-- Info Table -->
+  <table class="pdf-info-table">
+    <tr>
+      <td class="pdf-info-label">ชื่อเพลงที่ฝึกซ้อม:</td>
+      <td class="pdf-info-val" id="pdfSongTitle" style="font-weight:700; color:#1e3a8a;">-</td>
+      <td class="pdf-info-label">วัน-เวลาที่ฝึกซ้อม:</td>
+      <td class="pdf-info-val" id="pdfDateTime">-</td>
+    </tr>
+    <tr>
+      <td class="pdf-info-label">ลิงก์คลิปต้นแบบ (URL):</td>
+      <td class="pdf-info-val" id="pdfYtUrl" style="font-size:11px; color:#2563eb;">-</td>
+      <td class="pdf-info-label">ระยะเวลาในการซ้อม:</td>
+      <td class="pdf-info-val" id="pdfDuration">-</td>
+    </tr>
+  </table>
+
+  <!-- Quick Stats Grid -->
+  <div class="pdf-summary-grid">
+    <div class="pdf-stat-box">
+      <div class="pdf-stat-label">คะแนนความสม่ำเสมอจังหวะ</div>
+      <div class="pdf-stat-num" id="pdfScore">0/100</div>
+    </div>
+    <div class="pdf-stat-box">
+      <div class="pdf-stat-label" id="pdfCountLabel">จำนวนโน้ตที่ตรวจจับ</div>
+      <div class="pdf-stat-num" id="pdfTotalHits">0</div>
+    </div>
+    <div class="pdf-stat-box">
+      <div class="pdf-stat-label">ความเร็วเฉลี่ย (BPM)</div>
+      <div class="pdf-stat-num" id="pdfBpm">-</div>
+    </div>
+    <div class="pdf-stat-box">
+      <div class="pdf-stat-label">ระดับผลการประเมิน</div>
+      <div class="pdf-stat-num" id="pdfGrade" style="font-size:16px;">-</div>
+    </div>
+  </div>
+
+  <!-- Detailed Feedback Sections -->
+  <div class="pdf-section-title">🌟 1. จุดแข็งและทักษะที่ทำได้ดี (Strengths)</div>
+  <div class="pdf-box green" id="pdfStrengths">-</div>
+
+  <div class="pdf-section-title">⚠️ 2. จุดที่ควรปรับปรุงและระมัดระวัง (Areas for Improvement)</div>
+  <div class="pdf-box amber" id="pdfImprovements">-</div>
+
+  <div class="pdf-section-title">💡 3. แบบฝึกหัดและเทคนิคแนะนำสำหรับการซ้อมครั้งต่อไป (Recommended Drill)</div>
+  <div class="pdf-box purple" id="pdfDrills">-</div>
+
+  <!-- Signatures & Notes -->
+  <div class="pdf-signatures">
+    <div class="pdf-sign-col">
+      <br>
+      ลงชื่อ ................................................................<br>
+      ( ผู้ฝึกซ้อม / นักเรียน )
+    </div>
+    <div class="pdf-sign-col">
+      <br>
+      ลงชื่อ ................................................................<br>
+      ( ครูผู้ฝึกสอน / ผู้ประเมิน )
+    </div>
+  </div>
+
+  <div class="pdf-footer-note">
+    เอกสารประเมินผลอัตโนมัติจัดทำโดยระบบ Music Practice Coach • พิมพ์เมื่อ: <span id="pdfPrintTimestamp"></span>
+  </div>
+</div>
+
+<!-- Load YouTube IFrame Player API -->
+<script src="https://www.youtube.com/iframe_api"></script>
+
+<script>
+/* =========================================================
+   GLOBAL STATE & VARIABLES
+========================================================= */
+let currentMode = 'guitar'; // 'guitar' | 'drum_acoustic' | 'drum_midi'
+let isListening = false;
+let audioCtx = null;
+let analyser = null;
+let micStream = null;
+let animFrameId = null;
+let timerInterval = null;
+let practiceStartTime = 0;
+let practiceDurationSeconds = 0;
+
+// YouTube Player
+let ytPlayer = null;
+let ytReady = false;
+let currentLoadedVideoId = '';
+
+// Guitar Pitch Detection State
+let detectedNotesHistory = [];
+let lastNoteTime = 0;
+const NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+
+// Drum Detection State
+let hitCounts = { kick: 0, snare: 0, hihat: 0 };
+let hitTimestamps = [];
+let prevLowEnergy = 0;
+let prevMidEnergy = 0;
+let prevHighEnergy = 0;
+let lastDrumHitTime = 0;
+
+// Web MIDI State
+let midiAccess = null;
+let midiInputDevices = [];
+
+/* =========================================================
+   YOUTUBE EMBED & CONTROLS
+========================================================= */
+function onYouTubeIframeAPIReady() {
+  ytReady = true;
+}
+
+function extractYouTubeVideoId(url) {
+  if (!url) return null;
+  const regExp = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/|youtube\.com\/shorts\/)([^"&?\/\s]{11})/;
+  const match = url.match(regExp);
+  return match ? match[1] : null;
+}
+
+function loadYouTubeVideo() {
+  const url = document.getElementById('ytUrl').value.trim();
+  const videoId = extractYouTubeVideoId(url);
+  if (!videoId) {
+    alert('กรุณากรอกลิงก์ YouTube ที่ถูกต้อง เช่น https://www.youtube.com/watch?v=2dSGCzeuPIA');
+    return;
+  }
+
+  currentLoadedVideoId = videoId;
+  const placeholder = document.getElementById('ytPlaceholder');
+  if (placeholder) placeholder.style.display = 'none';
+
+  // Build origin-safe embedded player to prevent Error 150/153 on local file:// or sandbox
+  const ytWrapper = document.getElementById('ytWrapper');
+  
+  // Use direct responsive iframe with safe origins
+  ytWrapper.innerHTML = `
+    <iframe id="ytIframeEl" 
+      src="https://www.youtube.com/embed/${videoId}?enablejsapi=1&playsinline=1&rel=0&modestbranding=1" 
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+      allowfullscreen>
+    </iframe>
+  `;
+
+  // Attach YT.Player to control playback & speed
+  if (window.YT && YT.Player) {
+    setTimeout(() => {
+      try {
+        ytPlayer = new YT.Player('ytIframeEl', {
+          events: {
+            'onStateChange': onPlayerStateChange,
+            'onError': onPlayerError
+          }
+        });
+      } catch (e) {
+        console.log('IFrame direct mode active');
+      }
+    }, 500);
+  }
+}
+
+function onPlayerError(e) {
+  console.warn('YouTube Player Error:', e.data);
+  if (e.data === 150 || e.data === 153 || e.data === 101) {
+    alert('⚠️ คลิปเพลงนี้เจ้าของลิขสิทธิ์ไม่อนุญาตให้เล่นแบบฝังในหน้าเว็บ\n\n💡 คุณสามารถกดปุ่ม "เปิดแท็บใหม่" เพื่อเปิดฟังเพลงต้นฉบับได้โดยตรงครับ');
+  }
+}
+
+function openYouTubePopout() {
+  const url = document.getElementById('ytUrl').value.trim();
+  if (url) {
+    window.open(url, '_blank');
+  } else {
+    alert('กรุณากรอก URL คลิป YouTube ก่อนครับ');
+  }
+}
+
+function togglePlayVideo() {
+  if (ytPlayer && ytPlayer.getPlayerState) {
+    try {
+      const state = ytPlayer.getPlayerState();
+      const btn = document.getElementById('playPauseBtn');
+      if (state === YT.PlayerState.PLAYING) {
+        ytPlayer.pauseVideo();
+        btn.innerHTML = '<i class="fa-solid fa-play"></i> เล่นคลิป';
+      } else {
+        ytPlayer.playVideo();
+        btn.innerHTML = '<i class="fa-solid fa-pause"></i> หยุดคลิปชั่วคราว';
+      }
+    } catch(e) {
+      console.log(e);
+    }
+  } else {
+    // If not loaded yet, prompt user
+    if (!currentLoadedVideoId) {
+      loadYouTubeVideo();
+    }
+  }
+}
+
+function onPlayerStateChange(event) {
+  const btn = document.getElementById('playPauseBtn');
+  if (event.data === YT.PlayerState.PLAYING) {
+    btn.innerHTML = '<i class="fa-solid fa-pause"></i> หยุดคลิปชั่วคราว';
+  } else {
+    btn.innerHTML = '<i class="fa-solid fa-play"></i> เล่นคลิป';
+  }
+}
+
+function setSpeed(rate) {
+  if (ytPlayer && ytPlayer.setPlaybackRate) {
+    try {
+      ytPlayer.setPlaybackRate(rate);
+    } catch(e) {}
+  }
+  document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+}
+
+/* =========================================================
+   RESET FUNCTIONS (FOR ALL SECTIONS)
+========================================================= */
+function resetSongSection() {
+  document.getElementById('songTitle').value = '';
+  document.getElementById('ytUrl').value = '';
+  currentLoadedVideoId = '';
+  if (ytPlayer && ytPlayer.stopVideo) {
+    try { ytPlayer.stopVideo(); } catch(e) {}
+  }
+  ytPlayer = null;
+  const ytWrapper = document.getElementById('ytWrapper');
+  ytWrapper.innerHTML = `
+    <div id="ytPlaceholder" class="yt-placeholder">
+      <i class="fa-brands fa-youtube"></i>
+      <p style="font-size:14px; font-weight:600; color:#f8fafc;">ยังไม่มีคลิปเพลงที่โหลด</p>
+      <p style="font-size:12px; margin-top:4px;">กรุณากรอก URL YouTube ด้านบน แล้วกดปุ่ม <strong>"โหลดคลิป"</strong></p>
+    </div>
+    <div id="ytPlayer"></div>
+  `;
+  document.getElementById('playPauseBtn').innerHTML = '<i class="fa-solid fa-play"></i> เล่น/หยุดคลิป';
+}
+
+function resetPracticeStats() {
+  if (isListening) {
+    stopPractice();
+  }
+  detectedNotesHistory = [];
+  hitCounts = { kick: 0, snare: 0, hihat: 0 };
+  hitTimestamps = [];
+  practiceDurationSeconds = 0;
+  
+  document.getElementById('timerLabel').innerText = '00:00';
+  document.getElementById('totalHitsLabel').innerText = '0';
+  document.getElementById('bpmLabel').innerText = '-';
+  document.getElementById('detectedNote').innerText = '-';
+  document.getElementById('freqLabel').innerText = 'ความถี่: 0.0 Hz';
+  document.getElementById('meterBar').style.width = '0%';
+  document.getElementById('meterPercent').innerText = '0%';
+  document.getElementById('tunerNeedle').style.left = '50%';
+  document.getElementById('countKick').innerText = '0';
+  document.getElementById('countSnare').innerText = '0';
+  document.getElementById('countHihat').innerText = '0';
+  document.getElementById('saveStatus').innerText = '';
+}
+
+function resetFeedbackSection() {
+  document.getElementById('feedbackCard').style.display = 'none';
+  document.getElementById('stabilityScore').innerText = '-- / 100';
+  document.getElementById('scoreSummaryText').innerText = 'กำลังประมวลผล...';
+  document.getElementById('strengthsText').innerText = '-';
+  document.getElementById('improveText').innerText = '-';
+  document.getElementById('drillText').innerText = '-';
+}
+
+function resetAll() {
+  if (confirm('ต้องการรีเซ็ตข้อมูลทั้งหมดเพื่อเริ่มการฝึกซ้อมใหม่หรือไม่?')) {
+    resetSongSection();
+    resetPracticeStats();
+    resetFeedbackSection();
+  }
+}
+
+/* =========================================================
+   MODE SWITCHING (GUITAR / ACOUSTIC DRUM / MIDI DRUM)
+========================================================= */
+function switchMode(mode) {
+  if (isListening) {
+    alert('กรุณากด "หยุดและสรุปผล" ก่อนเปลี่ยนโหมดเครื่องดนตรีครับ');
+    return;
+  }
+  currentMode = mode;
+
+  document.querySelectorAll('.mode-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.mode === mode);
+  });
+
+  const guitarView = document.getElementById('guitarView');
+  const drumView = document.getElementById('drumView');
+  const liveBox = document.getElementById('liveDisplayBox');
+  const detectorTitle = document.getElementById('detectorTitle');
+  const statCountLabel = document.getElementById('statCountLabel');
+  const midiStatusBadge = document.getElementById('midiStatusBadge');
+
+  liveBox.classList.remove('drum-box', 'midi-box');
+  midiStatusBadge.style.display = 'none';
+
+  if (mode === 'guitar') {
+    guitarView.style.display = 'block';
+    drumView.style.display = 'none';
+    detectorTitle.innerText = '2. ตรวจจับเสียงกีตาร์แบบสด (Pitch Detection)';
+    statCountLabel.innerText = 'จำนวนโน้ต';
+  } else if (mode === 'drum_acoustic') {
+    guitarView.style.display = 'none';
+    drumView.style.display = 'block';
+    liveBox.classList.add('drum-box');
+    detectorTitle.innerText = '2. ตรวจจับเสียงกลองชุดผ่านไมค์ (Acoustic Drum)';
+    statCountLabel.innerText = 'จำนวนการตี (Hits)';
+  } else if (mode === 'drum_midi') {
+    guitarView.style.display = 'none';
+    drumView.style.display = 'block';
+    liveBox.classList.add('midi-box');
+    detectorTitle.innerText = '2. เชื่อมต่อกลองไฟฟ้า (Electronic Drum USB-MIDI)';
+    statCountLabel.innerText = 'จำนวนการตี (Hits)';
+    midiStatusBadge.style.display = 'inline-flex';
+    initWebMidi();
+  }
+}
+
+/* =========================================================
+   WEB MIDI API (FOR ELECTRONIC DRUMS)
+========================================================= */
+function initWebMidi() {
+  const badge = document.getElementById('midiStatusBadge');
+  const text = document.getElementById('midiStatusText');
+
+  if (navigator.requestMIDIAccess) {
+    navigator.requestMIDIAccess().then(
+      (midi) => {
+        midiAccess = midi;
+        let count = 0;
+        midiInputDevices = [];
+        for (let input of midiAccess.inputs.values()) {
+          input.onmidimessage = handleMidiMessage;
+          midiInputDevices.push(input.name);
+          count++;
+        }
+        if (count > 0) {
+          badge.classList.add('connected');
+          text.innerHTML = `เชื่อมต่อกลองไฟฟ้าแล้ว: <strong>${midiInputDevices.join(', ')}</strong>`;
+        } else {
+          badge.classList.remove('connected');
+          text.innerText = 'ไม่พบสาย USB-MIDI (สามารถใช้ไมค์จับเสียงกลองแทนได้)';
+        }
+
+        midiAccess.onstatechange = (e) => {
+          if (e.port.type === 'input') {
+            initWebMidi();
+          }
+        };
+      },
+      (err) => {
+        badge.classList.remove('connected');
+        text.innerText = 'เบราว์เซอร์นี้ไม่รองรับ Web MIDI หรือไม่มีสิทธิ์ (ใช้โหมดไมโครโฟนได้)';
+      }
+    );
+  } else {
+    badge.classList.remove('connected');
+    text.innerText = 'อุปกรณ์/เบราว์เซอร์นี้ไม่รองรับ Web MIDI (ใช้โหมดจับเสียงไมค์ได้)';
+  }
+}
+
+function handleMidiMessage(event) {
+  const [status, note, velocity] = event.data;
+  if ((status >= 144 && status <= 159) && velocity > 0) {
+    if (!isListening) return;
+
+    let drumType = 'snare';
+    if (note === 35 || note === 36) {
+      drumType = 'kick';
+    } else if (note === 38 || note === 40 || note === 37) {
+      drumType = 'snare';
+    } else if ([42, 44, 46, 49, 51, 52, 53, 55, 57].includes(note)) {
+      drumType = 'hihat';
+    } else {
+      drumType = 'snare';
+    }
+
+    triggerDrumHit(drumType, velocity / 127);
+  }
+}
+
+/* =========================================================
+   AUDIO & MICROPHONE RECORDING ENGINE
+========================================================= */
+async function startPractice() {
+  try {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    audioCtx = new AudioContextClass();
+
+    if (audioCtx.state === 'suspended') {
+      await audioCtx.resume();
+    }
+
+    const constraints = {
+      audio: {
+        echoCancellation: false,
+        noiseSuppression: false,
+        autoGainControl: false
+      }
+    };
+
+    try {
+      micStream = await navigator.mediaDevices.getUserMedia(constraints);
+    } catch (e) {
+      micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    }
+
+    const source = audioCtx.createMediaStreamSource(micStream);
+    analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 2048;
+    analyser.smoothingTimeConstant = 0.8;
+    source.connect(analyser);
+
+    isListening = true;
+    detectedNotesHistory = [];
+    hitCounts = { kick: 0, snare: 0, hihat: 0 };
+    hitTimestamps = [];
+    practiceStartTime = Date.now();
+    practiceDurationSeconds = 0;
+
+    document.getElementById('startBtn').style.display = 'none';
+    document.getElementById('stopBtn').style.display = 'flex';
+    document.getElementById('feedbackCard').style.display = 'none';
+    document.getElementById('saveStatus').innerText = '';
+    document.getElementById('countKick').innerText = '0';
+    document.getElementById('countSnare').innerText = '0';
+    document.getElementById('countHihat').innerText = '0';
+    document.getElementById('totalHitsLabel').innerText = '0';
+    document.getElementById('bpmLabel').innerText = '-';
+    document.getElementById('detectedNote').innerText = '-';
+    document.getElementById('freqLabel').innerText = 'ความถี่: 0.0 Hz';
+
+    clearInterval(timerInterval);
+    timerInterval = setInterval(updatePracticeTimer, 1000);
+
+    if (currentMode === 'guitar') {
+      guitarAudioLoop();
+    } else {
+      drumAudioLoop();
+    }
+  } catch (err) {
+    alert('⚠️ ไม่สามารถเปิดไมโครโฟนได้:\n' + err.message + '\n\n💡 วิธีแก้: กดไอคอนรูปแม่กุญแจ 🔒 ที่แถบพิมพ์ URL ด้านบน แล้วเลือก "อนุญาตไมโครโฟน" (Allow Microphone)');
+  }
+}
+
+function stopPractice() {
+  isListening = false;
+  clearInterval(timerInterval);
+  if (animFrameId) cancelAnimationFrame(animFrameId);
+
+  if (micStream) {
+    micStream.getTracks().forEach(t => t.stop());
+  }
+  if (audioCtx) {
+    audioCtx.close();
+  }
+
+  document.getElementById('startBtn').style.display = 'flex';
+  document.getElementById('stopBtn').style.display = 'none';
+  document.getElementById('meterBar').style.width = '0%';
+  document.getElementById('meterPercent').innerText = '0%';
+
+  generateComprehensiveFeedback();
+}
+
+function updatePracticeTimer() {
+  if (!isListening) return;
+  practiceDurationSeconds = Math.floor((Date.now() - practiceStartTime) / 1000);
+  const m = Math.floor(practiceDurationSeconds / 60).toString().padStart(2, '0');
+  const s = (practiceDurationSeconds % 60).toString().padStart(2, '0');
+  document.getElementById('timerLabel').innerText = `${m}:${s}`;
+}
+
+/* =========================================================
+   GUITAR PITCH DETECTION
+========================================================= */
+function guitarAudioLoop() {
+  if (!isListening) return;
+
+  const buffer = new Float32Array(analyser.fftSize);
+  analyser.getFloatTimeDomainData(buffer);
+
+  let rms = 0;
+  for (let i = 0; i < buffer.length; i++) {
+    rms += buffer[i] * buffer[i];
+  }
+  rms = Math.sqrt(rms / buffer.length);
+  updateMeterUI(rms);
+
+  const freq = autoCorrelate(buffer, audioCtx.sampleRate, rms);
+  const now = Date.now();
+
+  if (freq !== -1 && freq >= 60 && freq <= 1500) {
+    const noteData = freqToNoteData(freq);
+    document.getElementById('detectedNote').innerText = noteData.noteWithOctave;
+    document.getElementById('freqLabel').innerText = `ความถี่: ${freq.toFixed(1)} Hz (${noteData.cents > 0 ? '+' : ''}${noteData.cents} cents)`;
+
+    const needle = document.getElementById('tunerNeedle');
+    const clampedCents = Math.max(-50, Math.min(50, noteData.cents));
+    needle.style.left = `${50 + clampedCents}%`;
+
+    if (now - lastNoteTime > 120) {
+      detectedNotesHistory.push({
+        note: noteData.noteWithOctave,
+        pitchClass: noteData.noteName,
+        freq: freq,
+        time: now
+      });
+      hitTimestamps.push(now);
+      lastNoteTime = now;
+      document.getElementById('totalHitsLabel').innerText = detectedNotesHistory.length;
+      calculateRealtimeBPM();
+    }
+  }
+
+  animFrameId = requestAnimationFrame(guitarAudioLoop);
+}
+
+function autoCorrelate(buf, sampleRate, rms) {
+  if (rms < 0.02) return -1;
+
+  let r1 = 0, r2 = buf.length - 1, thres = 0.15;
+  for (let i = 0; i < buf.length / 2; i++) {
+    if (Math.abs(buf[i]) < thres) { r1 = i; break; }
+  }
+  for (let i = 1; i < buf.length / 2; i++) {
+    if (Math.abs(buf[buf.length - i]) < thres) { r2 = buf.length - i; break; }
+  }
+
+  buf = buf.slice(r1, r2);
+  const len = buf.length;
+  const c = new Float32Array(len);
+  for (let i = 0; i < len; i++) {
+    for (let j = 0; j < len - i; j++) {
+      c[i] += buf[j] * buf[j + i];
+    }
+  }
+
+  let d = 0;
+  while (c[d] > c[d + 1] && d < len - 1) d++;
+  let maxval = -1, maxpos = -1;
+  for (let i = d; i < len; i++) {
+    if (c[i] > maxval) {
+      maxval = c[i];
+      maxpos = i;
+    }
+  }
+
+  if (maxpos <= 0) return -1;
+  return sampleRate / maxpos;
+}
+
+function freqToNoteData(freq) {
+  const midi = 12 * (Math.log(freq / 440) / Math.log(2)) + 69;
+  const roundedMidi = Math.round(midi);
+  const cents = Math.round((midi - roundedMidi) * 100);
+  const noteName = NOTE_NAMES[roundedMidi % 12];
+  const octave = Math.floor(roundedMidi / 12) - 1;
+  return {
+    noteName: noteName,
+    octave: octave,
+    noteWithOctave: noteName + octave,
+    cents: cents
+  };
+}
+
+/* =========================================================
+   ACOUSTIC DRUM DETECTION
+========================================================= */
+function drumAudioLoop() {
+  if (!isListening) return;
+
+  const freqData = new Uint8Array(analyser.frequencyBinCount);
+  analyser.getByteFrequencyData(freqData);
+
+  let lowEnergy = 0, lowCount = 0;
+  let midEnergy = 0, midCount = 0;
+  let highEnergy = 0, highCount = 0;
+
+  for (let i = 2; i < 9; i++) { lowEnergy += freqData[i]; lowCount++; }
+  for (let i = 12; i < 110; i++) { midEnergy += freqData[i]; midCount++; }
+  for (let i = 160; i < Math.min(500, freqData.length); i++) { highEnergy += freqData[i]; highCount++; }
+
+  lowEnergy = lowCount ? lowEnergy / lowCount : 0;
+  midEnergy = midCount ? midEnergy / midCount : 0;
+  highEnergy = highCount ? highEnergy / highCount : 0;
+
+  const maxEnergy = Math.max(lowEnergy, midEnergy, highEnergy);
+  updateMeterUI(maxEnergy / 255);
+
+  const now = Date.now();
+  const timeSinceLast = now - lastDrumHitTime;
+
+  if (timeSinceLast > 90) {
+    const lowDiff = lowEnergy - prevLowEnergy;
+    const midDiff = midEnergy - prevMidEnergy;
+    const highDiff = highEnergy - prevHighEnergy;
+
+    if (lowEnergy > 100 && lowDiff > 35 && lowEnergy > midEnergy * 0.9) {
+      triggerDrumHit('kick', lowEnergy / 255);
+      lastDrumHitTime = now;
+    } else if (midEnergy > 90 && midDiff > 30) {
+      triggerDrumHit('snare', midEnergy / 255);
+      lastDrumHitTime = now;
+    } else if (highEnergy > 75 && highDiff > 25) {
+      triggerDrumHit('hihat', highEnergy / 255);
+      lastDrumHitTime = now;
+    }
+  }
+
+  prevLowEnergy = lowEnergy * 0.65;
+  prevMidEnergy = midEnergy * 0.65;
+  prevHighEnergy = highEnergy * 0.65;
+
+  animFrameId = requestAnimationFrame(drumAudioLoop);
+}
+
+function triggerDrumHit(drumType, velocity) {
+  hitCounts[drumType]++;
+  const now = Date.now();
+  hitTimestamps.push(now);
+
+  document.getElementById('countKick').innerText = hitCounts.kick;
+  document.getElementById('countSnare').innerText = hitCounts.snare;
+  document.getElementById('countHihat').innerText = hitCounts.hihat;
+
+  const totalHits = hitCounts.kick + hitCounts.snare + hitCounts.hihat;
+  document.getElementById('totalHitsLabel').innerText = totalHits;
+
+  const padMap = { kick: 'padKick', snare: 'padSnare', hihat: 'padHihat' };
+  const hitClassMap = { kick: 'hit-kick', snare: 'hit-snare', hihat: 'hit-hihat' };
+
+  const padEl = document.getElementById(padMap[drumType]);
+  if (padEl) {
+    padEl.classList.remove('hit-kick', 'hit-snare', 'hit-hihat');
+    void padEl.offsetWidth;
+    padEl.classList.add(hitClassMap[drumType]);
+    setTimeout(() => {
+      padEl.classList.remove('hit-kick', 'hit-snare', 'hit-hihat');
+    }, 120);
+  }
+
+  calculateRealtimeBPM();
+}
+
+function updateMeterUI(level) {
+  const percent = Math.min(100, Math.round(level * 100));
+  const bar = document.getElementById('meterBar');
+  const label = document.getElementById('meterPercent');
+  if (bar && label) {
+    bar.style.width = `${percent}%`;
+    label.innerText = `${percent}%`;
+  }
+}
+
+function calculateRealtimeBPM() {
+  if (hitTimestamps.length < 4) return;
+  const recentHits = hitTimestamps.slice(-8);
+  let intervals = [];
+  for (let i = 1; i < recentHits.length; i++) {
+    const diffMs = recentHits[i] - recentHits[i - 1];
+    if (diffMs >= 150 && diffMs <= 2000) {
+      intervals.push(diffMs);
+    }
+  }
+
+  if (intervals.length >= 2) {
+    const avgInterval = intervals.reduce((a, b) => a + b, 0) / intervals.length;
+    const bpm = Math.round(60000 / avgInterval);
+    if (bpm >= 40 && bpm <= 260) {
+      document.getElementById('bpmLabel').innerText = bpm;
+    }
+  }
+}
+
+/* =========================================================
+   FEEDBACK GENERATION & A4 PDF EXPORT
+========================================================= */
+let lastEvaluationData = null;
+
+function generateComprehensiveFeedback() {
+  const feedbackCard = document.getElementById('feedbackCard');
+  feedbackCard.style.display = 'block';
+  feedbackCard.scrollIntoView({ behavior: 'smooth' });
+
+  const songTitle = document.getElementById('songTitle').value.trim() || 'แบบฝึกหัดทั่วไป (ไม่ได้ระบุชื่อเพลง)';
+  const ytUrl = document.getElementById('ytUrl').value.trim() || 'ไม่ได้ระบุ URL';
+  const totalItems = currentMode === 'guitar' 
+    ? detectedNotesHistory.length 
+    : (hitCounts.kick + hitCounts.snare + hitCounts.hihat);
+
+  let stabilityScore = 75;
+  let avgBpm = 0;
+
+  if (hitTimestamps.length >= 6) {
+    let intervals = [];
+    for (let i = 1; i < hitTimestamps.length; i++) {
+      const diff = hitTimestamps[i] - hitTimestamps[i - 1];
+      if (diff >= 120 && diff <= 3000) {
+        intervals.push(diff);
+      }
+    }
+    if (intervals.length >= 5) {
+      const mean = intervals.reduce((a, b) => a + b, 0) / intervals.length;
+      avgBpm = Math.round(60000 / mean);
+      const variance = intervals.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / intervals.length;
+      const stdDev = Math.sqrt(variance);
+      const coefficientOfVariation = stdDev / mean;
+      stabilityScore = Math.max(40, Math.min(98, Math.round(100 - (coefficientOfVariation * 100))));
+    }
+  }
+
+  document.getElementById('stabilityScore').innerText = `${stabilityScore} / 100`;
+
+  let scoreSummary = '';
+  let gradeText = 'ระดับดี (Good)';
+  if (stabilityScore >= 85) {
+    scoreSummary = '🌟 ยอดเยี่ยมมาก! จังหวะมีความสม่ำเสมอและแม่นยำสูง';
+    gradeText = 'ยอดเยี่ยม (Excellent - A)';
+  } else if (stabilityScore >= 70) {
+    scoreSummary = '👍 ดีมาก! คุมจังหวะได้เกาะกลุ่มดี มีความลื่นไหล';
+    gradeText = 'ดีมาก (Very Good - B+)';
+  } else {
+    scoreSummary = '⚡ จังหวะยังมีการแกว่ง (เร็ว-ช้าสลับกัน) ลองเปิดคลิปหรือ Metronome ฝึกซ้ำ';
+    gradeText = 'ควรพัฒนาเพิ่ม (Needs Practice - C)';
+  }
+  document.getElementById('scoreSummaryText').innerText = scoreSummary;
+
+  let strengths = '';
+  let improvements = '';
+  let drill = '';
+
+  if (currentMode === 'guitar') {
+    if (totalItems >= 30) {
+      strengths = `ดีดโน้ตได้อย่างต่อเนื่องทั้งหมด ${totalItems} ครั้ง มีความมั่นใจในการกดสายและรักษาความคมชัดของเสียงกังวานได้ดี เสียงไม่อู้อี้`;
+      improvements = 'รักษาความนิ่งของนิ้วในการเปลี่ยนคอร์ด และคอยตรวจดูจังหวะดีดขึ้น-ลง (Strumming) ให้ลงจังหวะตกพร้อมกับคลิปเพลงต้นฉบับอย่างสม่ำเสมอ';
+      drill = 'ลองปรับความเร็วคลิป YouTube เป็น 0.75x แล้วซ้อมจับคอร์ดท่อน Hook ช้าๆ 3 รอบให้เป๊ะ 100% ก่อนเพิ่มความเร็วเป็นปกติ';
+    } else if (totalItems >= 10) {
+      strengths = 'เริ่มจับตำแหน่งเฟรตและดีดโน้ตออกเสียงได้ยินชัดเจน สามารถเริ่มจับคอร์ดหลักของเพลงได้';
+      improvements = 'ระวังเสียงบอร์ดหรือเสียงพร่าที่อาจเกิดจากนิ้วไปแตะโดนสายข้างเคียง แนะนำให้กดนิ้วให้ชิดเฟรตมากขึ้นและยกข้อนิ้วขึ้น';
+      drill = 'ฝึกดีดสายเปิดสลับกับคอร์ดหลักทีละสาย เพื่อตรวจสอบว่าทุกสายเสียงกังวานและไม่บอร์ด';
+    } else {
+      strengths = 'มีความตั้งใจในการเริ่มฝึกซ้อมเพลงและวางฟอร์มมือ';
+      improvements = 'ระบบจับเสียงได้ค่อนข้างน้อย อาจเกิดจากดีดเบาเกินไป หรือระยะห่างจากไมโครโฟนไกลเกินไป';
+      drill = 'ขยับกีตาร์เข้าใกล้ไมโครโฟนมากขึ้น ดีดให้เต็มน้ำหนัก และตรวจสอบการตั้งสายกีตาร์ใหม่ (Standard Tuning E-A-D-G-B-E)';
+    }
+  } else {
+    if (totalItems >= 40) {
+      strengths = `ตีได้ทั้งหมด ${totalItems} จังหวะ (Kick: ${hitCounts.kick}, Snare: ${hitCounts.snare}, Hi-Hat/ฉาบ: ${hitCounts.hihat}) การประสานมือและเท้ามีความต่อเนื่องดีมาก`;
+      improvements = 'เน้นการบาลานซ์น้ำหนักระหว่างมือซ้าย-มือขวา และเท้ากระเดื่อง โดยเฉพาะจังหวะ Snare ให้ตกบนจังหวะที่ 2 และ 4 พอดี';
+      drill = 'ฝึกแพทเทิร์น 8-Beat พื้นฐานคู่กับคลิป YouTube ความเร็ว 0.75x โดยนับ "1 และ 2 และ 3 และ 4 และ" ในใจให้สม่ำเสมอ';
+    } else if (totalItems >= 15) {
+      strengths = `สามารถส่งจังหวะหลักได้ครบถ้วน เริ่มจับลูกส่งและกรูฟของเพลงได้`;
+      improvements = 'ระวังจังหวะรีบตีเกินเพลง (Rushing) หรือตีช้ากว่าเพลง (Dragging) ในช่วงเปลี่ยนท่อนเพลง';
+      drill = 'ฝึกตีเฉพาะ Hi-Hat กับ Kick ให้คงที่ก่อน แล้วจึงค่อยเพิ่ม Snare ในจังหวะที่ 2 และ 4';
+    } else {
+      strengths = 'มีความพร้อมในการฝึกซ้อมกลอง';
+      improvements = 'จำนวนการตีที่จับได้ยังมีน้อย แนะนำให้ตีให้มีน้ำหนักชัดเจน หรือขยับไมโครโฟนเข้าใกล้ชุดกลองมากขึ้น';
+      drill = 'ฝึกตี Single Stroke (ซ้าย-ขวาสลับกัน) บนแป้นสแนร์เบาๆ 4 ห้องเพลงเพื่อวอร์มนิ้วและข้อมือ';
+    }
+  }
+
+  document.getElementById('strengthsText').innerText = strengths;
+  document.getElementById('improveText').innerText = improvements;
+  document.getElementById('drillText').innerText = drill;
+
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
+  const timeStr = now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + ' น.';
+  const m = Math.floor(practiceDurationSeconds / 60).toString().padStart(2, '0');
+  const s = (practiceDurationSeconds % 60).toString().padStart(2, '0');
+  const durationStr = `${m} นาที ${s} วินาที`;
+
+  let instrumentLabel = '🎸 กีตาร์ (Guitar)';
+  if (currentMode === 'drum_acoustic') instrumentLabel = '🥁 กลองชุด (Acoustic Drums)';
+  if (currentMode === 'drum_midi') instrumentLabel = '⚡ กลองไฟฟ้า (Electronic Drums)';
+
+  lastEvaluationData = {
+    songTitle: songTitle,
+    ytUrl: ytUrl,
+    instrumentLabel: instrumentLabel,
+    dateStr: dateStr,
+    timeStr: timeStr,
+    durationStr: durationStr,
+    stabilityScore: stabilityScore,
+    totalItems: totalItems,
+    avgBpm: avgBpm || '-',
+    gradeText: gradeText,
+    strengths: strengths,
+    improvements: improvements,
+    drill: drill
+  };
+
+  // Sync to Google Sheets if running inside Google Apps Script
+  if (typeof google !== 'undefined' && google.script && google.script.run) {
+    document.getElementById('saveStatus').innerText = '⏳ กำลังบันทึกผลลง Google Sheet...';
+    google.script.run
+      .withSuccessHandler(() => {
+        document.getElementById('saveStatus').innerText = '✅ บันทึกสถิติลง Google Sheet เรียบร้อยแล้ว';
+      })
+      .savePracticeLog({
+        mode: currentMode,
+        songTitle: songTitle,
+        durationSeconds: practiceDurationSeconds,
+        totalItems: totalItems,
+        stabilityScore: stabilityScore,
+        avgBpm: avgBpm || '-',
+        strengths: strengths,
+        improvements: improvements
+      });
+  }
+}
+
+/* =========================================================
+   GENERATE EXACT 1-PAGE A4 PDF
+========================================================= */
+function generateA4PDF() {
+  if (!lastEvaluationData) {
+    generateComprehensiveFeedback();
+  }
+  const d = lastEvaluationData;
+
+  // Fill in PDF Template
+  document.getElementById('pdfInstrumentBadge').innerText = d.instrumentLabel;
+  document.getElementById('pdfSongTitle').innerText = d.songTitle;
+  document.getElementById('pdfDateTime').innerText = `${d.dateStr} เวลา ${d.timeStr}`;
+  document.getElementById('pdfYtUrl').innerText = d.ytUrl;
+  document.getElementById('pdfDuration').innerText = d.durationStr;
+  document.getElementById('pdfScore').innerText = `${d.stabilityScore}/100`;
+  document.getElementById('pdfTotalHits').innerText = d.totalItems;
+  document.getElementById('pdfBpm').innerText = d.avgBpm;
+  document.getElementById('pdfGrade').innerText = d.gradeText;
+  document.getElementById('pdfStrengths').innerText = d.strengths;
+  document.getElementById('pdfImprovements').innerText = d.improvements;
+  document.getElementById('pdfDrills').innerText = d.drill;
+  document.getElementById('pdfPrintTimestamp').innerText = `${d.dateStr} ${d.timeStr}`;
+
+  if (currentMode === 'guitar') {
+    document.getElementById('pdfCountLabel').innerText = 'จำนวนโน้ตที่ตรวจจับ';
+  } else {
+    document.getElementById('pdfCountLabel').innerText = 'จำนวนจังหวะกลอง (Hits)';
+  }
+
+  const element = document.getElementById('pdfPrintTemplate');
+  element.style.display = 'block';
+
+  const cleanSongName = d.songTitle.replace(/[^a-zA-Z0-9ก-๙_-]/g, '_');
+  const filename = `รายงานการซ้อม_${cleanSongName}_${new Date().toISOString().slice(0,10)}.pdf`;
+
+  const opt = {
+    margin: [0, 0, 0, 0],
+    filename: filename,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  };
+
+  html2pdf().set(opt).from(element).save().then(() => {
+    element.style.display = 'none';
+  }).catch((err) => {
+    console.error('PDF error, falling back to print:', err);
+    window.print();
+    element.style.display = 'none';
+  });
+}
+</script>
+
+</body>
+</html>
