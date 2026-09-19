@@ -10,9 +10,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  
-  <!-- html2pdf.js for 1-Page A4 PDF Generation -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
   <style>
     :root {
@@ -513,172 +510,104 @@
     }
 
     /* =========================================================
-       PERFECT BALANCED 1-PAGE A4 PDF TEMPLATE (TOP-ALIGNED)
+       MODAL PREVIEW FOR PDF REPORT
     ========================================================= */
-    #pdfPrintTemplate {
+    .modal-overlay {
       display: none;
       position: fixed;
       top: 0;
       left: 0;
-      width: 794px; /* Exact 210mm at 96 DPI */
-      min-height: 1120px; /* Exact 297mm at 96 DPI */
-      height: 1120px;
-      max-height: 1120px;
-      padding: 28px 34px 24px 34px;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(4px);
+      z-index: 99999;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+    }
+    .modal-card {
+      background: #1e293b;
+      border: 1px solid #475569;
+      border-radius: 16px;
+      max-width: 860px;
+      width: 100%;
+      max-height: 94vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    }
+    .modal-header {
+      padding: 14px 20px;
+      background: #0f172a;
+      border-bottom: 1px solid #334155;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-body {
+      padding: 16px;
+      overflow-y: auto;
+      background: #475569;
+      display: flex;
+      justify-content: center;
+    }
+    .modal-footer {
+      padding: 12px 20px;
+      background: #0f172a;
+      border-top: 1px solid #334155;
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    /* A4 Sheet on Screen & Print */
+    .a4-sheet {
       background: #ffffff;
       color: #0f172a;
-      font-family: 'Sarabun', 'Kanit', sans-serif;
+      width: 760px;
+      min-height: 1060px;
+      padding: 28px 34px 22px 34px;
       box-sizing: border-box;
-      z-index: 999999;
-      margin: 0;
-      overflow: hidden;
-    }
-
-    .pdf-header {
-      border-bottom: 2.5px solid #2563eb;
-      padding-bottom: 8px;
-      margin-bottom: 10px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      font-family: 'Sarabun', 'Kanit', sans-serif;
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .pdf-title {
-      font-size: 19px;
-      font-weight: 700;
-      color: #1e3a8a;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .pdf-subtitle {
-      font-size: 11.5px;
-      color: #64748b;
-      margin-top: 2px;
-    }
-    .pdf-badge {
-      background: #eff6ff;
-      border: 1.5px solid #93c5fd;
-      color: #1d4ed8;
-      padding: 4px 12px;
-      border-radius: 8px;
-      font-size: 12.5px;
-      font-weight: 700;
+      flex-direction: column;
     }
 
-    .pdf-info-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 10px;
-      font-size: 12px;
-      border: 1px solid #cbd5e1;
-      border-radius: 6px;
-      overflow: hidden;
+    /* =========================================================
+       NATIVE PRINT / SAVE AS PDF (100% RELIABLE)
+    ========================================================= */
+    @page {
+      size: A4 portrait;
+      margin: 10mm 12mm;
     }
-    .pdf-info-table td {
-      padding: 6px 10px;
-      border: 1px solid #cbd5e1;
-      vertical-align: middle;
-    }
-    .pdf-info-label {
-      background: #f1f5f9;
-      font-weight: 700;
-      color: #334155;
-      width: 18%;
-    }
-    .pdf-info-val {
-      color: #0f172a;
-      width: 32%;
-      word-break: break-all;
-    }
-
-    .pdf-summary-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-    .pdf-stat-box {
-      background: #f8fafc;
-      border: 1px solid #cbd5e1;
-      border-radius: 8px;
-      padding: 8px 6px;
-      text-align: center;
-    }
-    .pdf-stat-label {
-      font-size: 11px;
-      color: #64748b;
-      font-weight: 600;
-    }
-    .pdf-stat-num {
-      font-size: 21px;
-      font-weight: 700;
-      color: #1e40af;
-      font-family: 'JetBrains Mono', 'Kanit', sans-serif;
-      margin-top: 2px;
-    }
-
-    .pdf-section-title {
-      font-size: 13.5px;
-      font-weight: 700;
-      color: #1e3a8a;
-      margin-top: 8px;
-      margin-bottom: 4px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .pdf-box {
-      background: #f8fafc;
-      border-left: 4.5px solid #3b82f6;
-      border-radius: 6px;
-      padding: 9px 12px;
-      margin-bottom: 6px;
-      font-size: 12px;
-      line-height: 1.5;
-      color: #1e293b;
-    }
-    .pdf-box.green { border-left-color: #10b981; background: #f0fdf4; border: 1px solid #bbf7d0; border-left-width: 4.5px; }
-    .pdf-box.amber { border-left-color: #f59e0b; background: #fffbeb; border: 1px solid #fde68a; border-left-width: 4.5px; }
-    .pdf-box.purple { border-left-color: #8b5cf6; background: #faf5ff; border: 1px solid #e9d5ff; border-left-width: 4.5px; }
-
-    .pdf-signatures {
-      margin-top: 18px;
-      display: flex;
-      justify-content: space-between;
-      font-size: 12px;
-    }
-    .pdf-sign-col {
-      width: 44%;
-      text-align: center;
-      border-top: 1px dashed #64748b;
-      padding-top: 8px;
-      color: #334155;
-    }
-    .pdf-footer-note {
-      margin-top: 18px;
-      font-size: 10.5px;
-      color: #94a3b8;
-      text-align: center;
-      border-top: 1px solid #e2e8f0;
-      padding-top: 6px;
-    }
-
     @media print {
-      body * {
-        visibility: hidden;
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
+        padding: 0 !important;
+        margin: 0 !important;
       }
-      #pdfPrintTemplate, #pdfPrintTemplate * {
-        visibility: visible;
+      .container, .modal-overlay, header, footer {
+        display: none !important;
       }
-      #pdfPrintTemplate {
+      #printContainerOnly {
         display: block !important;
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 210mm;
-        height: 297mm;
-        margin: 0;
-        padding: 12mm 15mm;
+        width: 100% !important;
+        background: #ffffff !important;
+      }
+      .a4-sheet {
+        box-shadow: none !important;
+        padding: 0 !important;
+        width: 100% !important;
+        min-height: auto !important;
+      }
+    }
+    @media screen {
+      #printContainerOnly {
+        display: none;
       }
     }
   </style>
@@ -874,7 +803,7 @@
         <span>3. สรุปผลการประเมินและการวิเคราะห์ข้อควรปรับปรุง</span>
       </div>
       <div style="display:flex; gap:8px;">
-        <button class="btn btn-sm btn-pdf" onclick="generateA4PDF()">
+        <button class="btn btn-sm btn-pdf" onclick="openReportModal()">
           <i class="fa-solid fa-file-pdf"></i> ดาวน์โหลดผล PDF (A4 1 หน้า)
         </button>
         <button class="btn btn-sm btn-reset" onclick="resetFeedbackSection()" title="ล้างผลการประเมิน">
@@ -916,83 +845,35 @@
 </div>
 
 <!-- =========================================================
-     PERFECT 1-PAGE A4 PDF TEMPLATE (TOP-ALIGNED & BALANCED)
+     MODAL PREVIEW & PDF PRINT CONTAINER
 ========================================================= -->
-<div id="pdfPrintTemplate">
-  <div class="pdf-header">
-    <div>
-      <div class="pdf-title">
-        <span>🎸🥁 รายงานผลการฝึกซ้อมดนตรี (Music Practice Evaluation Report)</span>
+<div id="reportModal" class="modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div style="font-weight:700; color:#f8fafc; font-size:16px;">
+        <i class="fa-solid fa-file-pdf" style="color:#ef4444;"></i> ตัวอย่างเอกสารรายงานผลการฝึกซ้อม (A4 Report Preview)
       </div>
-      <div class="pdf-subtitle">ระบบวิเคราะห์และประเมินทักษะการเล่นดนตรีอัจฉริยะ • Music Practice Coach</div>
+      <button class="btn btn-sm btn-reset" onclick="closeReportModal()">&times; ปิด</button>
     </div>
-    <div class="pdf-badge" id="pdfInstrumentBadge">🎸 กีตาร์ (Guitar)</div>
-  </div>
-
-  <!-- Info Table -->
-  <table class="pdf-info-table">
-    <tr>
-      <td class="pdf-info-label">ชื่อเพลงที่ฝึกซ้อม:</td>
-      <td class="pdf-info-val" id="pdfSongTitle" style="font-weight:700; color:#1e3a8a;">-</td>
-      <td class="pdf-info-label">วัน-เวลาที่ฝึกซ้อม:</td>
-      <td class="pdf-info-val" id="pdfDateTime">-</td>
-    </tr>
-    <tr>
-      <td class="pdf-info-label">ลิงก์คลิปต้นแบบ (URL):</td>
-      <td class="pdf-info-val" id="pdfYtUrl" style="font-size:10.5px; color:#2563eb;">-</td>
-      <td class="pdf-info-label">ระยะเวลาในการซ้อม:</td>
-      <td class="pdf-info-val" id="pdfDuration">-</td>
-    </tr>
-  </table>
-
-  <!-- Quick Stats Grid -->
-  <div class="pdf-summary-grid">
-    <div class="pdf-stat-box">
-      <div class="pdf-stat-label">คะแนนความสม่ำเสมอจังหวะ</div>
-      <div class="pdf-stat-num" id="pdfScore">0/100</div>
+    
+    <div class="modal-body" id="modalScrollArea">
+      <!-- A4 Sheet Container -->
+      <div class="a4-sheet" id="a4ContentArea">
+        <!-- Content will be injected dynamically -->
+      </div>
     </div>
-    <div class="pdf-stat-box">
-      <div class="pdf-stat-label" id="pdfCountLabel">จำนวนโน้ตที่ตรวจจับ</div>
-      <div class="pdf-stat-num" id="pdfTotalHits">0</div>
-    </div>
-    <div class="pdf-stat-box">
-      <div class="pdf-stat-label">ความเร็วเฉลี่ย (BPM)</div>
-      <div class="pdf-stat-num" id="pdfBpm">-</div>
-    </div>
-    <div class="pdf-stat-box">
-      <div class="pdf-stat-label">ระดับผลการประเมิน</div>
-      <div class="pdf-stat-num" id="pdfGrade" style="font-size:15px;">-</div>
-    </div>
-  </div>
 
-  <!-- Detailed Feedback Sections -->
-  <div class="pdf-section-title">🌟 1. จุดแข็งและทักษะที่ทำได้ดี (Strengths)</div>
-  <div class="pdf-box green" id="pdfStrengths">-</div>
-
-  <div class="pdf-section-title">⚠️ 2. จุดที่ควรปรับปรุงและระมัดระวัง (Areas for Improvement)</div>
-  <div class="pdf-box amber" id="pdfImprovements">-</div>
-
-  <div class="pdf-section-title">💡 3. แบบฝึกหัดและเทคนิคแนะนำสำหรับการซ้อมครั้งต่อไป (Recommended Drills)</div>
-  <div class="pdf-box purple" id="pdfDrills">-</div>
-
-  <!-- Signatures & Notes -->
-  <div class="pdf-signatures">
-    <div class="pdf-sign-col">
-      <br>
-      ลงชื่อ ................................................................<br>
-      ( ผู้ฝึกซ้อม / นักเรียน )
+    <div class="modal-footer">
+      <button class="btn btn-reset" onclick="closeReportModal()">ปิด</button>
+      <button class="btn btn-pdf" onclick="triggerNativePdfSave()">
+        <i class="fa-solid fa-print"></i> บันทึกเป็น PDF / สั่งพิมพ์ (Save as PDF)
+      </button>
     </div>
-    <div class="pdf-sign-col">
-      <br>
-      ลงชื่อ ................................................................<br>
-      ( ครูผู้ฝึกสอน / ผู้ประเมิน )
-    </div>
-  </div>
-
-  <div class="pdf-footer-note">
-    เอกสารประเมินผลอัตโนมัติจัดทำโดยระบบ Music Practice Coach • วันที่พิมพ์รายงาน: <span id="pdfPrintTimestamp"></span>
   </div>
 </div>
+
+<!-- Dedicated Print Container for window.print() -->
+<div id="printContainerOnly"></div>
 
 <!-- Load YouTube IFrame Player API -->
 <script src="https://www.youtube.com/iframe_api"></script>
@@ -1628,7 +1509,7 @@ function calculateRealtimeBPM() {
 }
 
 /* =========================================================
-   FEEDBACK GENERATION & A4 PDF EXPORT
+   FEEDBACK GENERATION
 ========================================================= */
 let lastEvaluationData = null;
 
@@ -1764,67 +1645,126 @@ function generateComprehensiveFeedback() {
 }
 
 /* =========================================================
-   GENERATE PERFECT 1-PAGE A4 PDF (TOP ALIGNED & BALANCED)
+   GENERATE REPORT HTML BUILDER
 ========================================================= */
-function generateA4PDF() {
+function buildReportHTML(d) {
+  const countLabel = currentMode === 'guitar' ? 'จำนวนโน้ตที่ตรวจจับ' : 'จำนวนจังหวะกลอง (Hits)';
+  return `
+    <!-- Header -->
+    <div style="border-bottom: 2.5px solid #2563eb; padding-bottom: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <div style="font-size: 19px; font-weight: 700; color: #1e3a8a;">
+          🎸🥁 รายงานผลการฝึกซ้อมดนตรี (Music Practice Evaluation Report)
+        </div>
+        <div style="font-size: 11.5px; color: #64748b; margin-top: 2px;">
+          ระบบวิเคราะห์และประเมินทักษะการเล่นดนตรีอัจฉริยะ • Music Practice Coach
+        </div>
+      </div>
+      <div style="background: #eff6ff; border: 1.5px solid #93c5fd; color: #1d4ed8; padding: 4px 12px; border-radius: 8px; font-size: 12.5px; font-weight: 700;">
+        ${d.instrumentLabel}
+      </div>
+    </div>
+
+    <!-- Info Table -->
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 12px; font-size: 12px; border: 1px solid #cbd5e1;">
+      <tr>
+        <td style="padding: 6px 10px; border: 1px solid #cbd5e1; background: #f1f5f9; font-weight: 700; color: #334155; width: 18%;">ชื่อเพลงที่ฝึกซ้อม:</td>
+        <td style="padding: 6px 10px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e3a8a; width: 32%;">${d.songTitle}</td>
+        <td style="padding: 6px 10px; border: 1px solid #cbd5e1; background: #f1f5f9; font-weight: 700; color: #334155; width: 18%;">วัน-เวลาที่ฝึกซ้อม:</td>
+        <td style="padding: 6px 10px; border: 1px solid #cbd5e1; color: #0f172a; width: 32%;">${d.dateTimeText}</td>
+      </tr>
+      <tr>
+        <td style="padding: 6px 10px; border: 1px solid #cbd5e1; background: #f1f5f9; font-weight: 700; color: #334155;">ลิงก์คลิปต้นแบบ:</td>
+        <td style="padding: 6px 10px; border: 1px solid #cbd5e1; font-size: 10.5px; color: #2563eb; word-break: break-all;">${d.ytUrl}</td>
+        <td style="padding: 6px 10px; border: 1px solid #cbd5e1; background: #f1f5f9; font-weight: 700; color: #334155;">ระยะเวลาในการซ้อม:</td>
+        <td style="padding: 6px 10px; border: 1px solid #cbd5e1; color: #0f172a;">${d.durationStr}</td>
+      </tr>
+    </table>
+
+    <!-- Quick Stats Grid -->
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 14px;">
+      <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 6px; text-align: center;">
+        <div style="font-size: 11px; color: #64748b; font-weight: 600;">คะแนนความสม่ำเสมอจังหวะ</div>
+        <div style="font-size: 21px; font-weight: 700; color: #1e40af; font-family: 'JetBrains Mono', 'Kanit', sans-serif; margin-top: 2px;">${d.stabilityScore}/100</div>
+      </div>
+      <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 6px; text-align: center;">
+        <div style="font-size: 11px; color: #64748b; font-weight: 600;">${countLabel}</div>
+        <div style="font-size: 21px; font-weight: 700; color: #1e40af; font-family: 'JetBrains Mono', 'Kanit', sans-serif; margin-top: 2px;">${d.totalItems}</div>
+      </div>
+      <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 6px; text-align: center;">
+        <div style="font-size: 11px; color: #64748b; font-weight: 600;">ความเร็วเฉลี่ย (BPM)</div>
+        <div style="font-size: 21px; font-weight: 700; color: #1e40af; font-family: 'JetBrains Mono', 'Kanit', sans-serif; margin-top: 2px;">${d.avgBpm}</div>
+      </div>
+      <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 6px; text-align: center;">
+        <div style="font-size: 11px; color: #64748b; font-weight: 600;">ระดับผลการประเมิน</div>
+        <div style="font-size: 14px; font-weight: 700; color: #1e40af; margin-top: 4px;">${d.gradeText}</div>
+      </div>
+    </div>
+
+    <!-- Detailed Feedback Sections -->
+    <div style="font-size: 13.5px; font-weight: 700; color: #1e3a8a; margin-top: 8px; margin-bottom: 4px;">🌟 1. จุดแข็งและทักษะที่ทำได้ดี (Strengths)</div>
+    <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-left: 4.5px solid #10b981; border-radius: 6px; padding: 9px 12px; margin-bottom: 8px; font-size: 12px; line-height: 1.5; color: #1e293b;">
+      ${d.strengths}
+    </div>
+
+    <div style="font-size: 13.5px; font-weight: 700; color: #1e3a8a; margin-top: 8px; margin-bottom: 4px;">⚠️ 2. จุดที่ควรปรับปรุงและระมัดระวัง (Areas for Improvement)</div>
+    <div style="background: #fffbeb; border: 1px solid #fde68a; border-left: 4.5px solid #f59e0b; border-radius: 6px; padding: 9px 12px; margin-bottom: 8px; font-size: 12px; line-height: 1.5; color: #1e293b;">
+      ${d.improvements}
+    </div>
+
+    <div style="font-size: 13.5px; font-weight: 700; color: #1e3a8a; margin-top: 8px; margin-bottom: 4px;">💡 3. แบบฝึกหัดและเทคนิคแนะนำสำหรับการซ้อมครั้งต่อไป (Recommended Drills)</div>
+    <div style="background: #faf5ff; border: 1px solid #e9d5ff; border-left: 4.5px solid #8b5cf6; border-radius: 6px; padding: 9px 12px; margin-bottom: 8px; font-size: 12px; line-height: 1.5; color: #1e293b;">
+      ${d.drill}
+    </div>
+
+    <!-- Signatures -->
+    <div style="margin-top: 22px; display: flex; justify-content: space-between; font-size: 12px;">
+      <div style="width: 44%; text-align: center; border-top: 1px dashed #64748b; padding-top: 8px; color: #334155;">
+        <br>
+        ลงชื่อ ................................................................<br>
+        ( ผู้ฝึกซ้อม / นักเรียน )
+      </div>
+      <div style="width: 44%; text-align: center; border-top: 1px dashed #64748b; padding-top: 8px; color: #334155;">
+        <br>
+        ลงชื่อ ................................................................<br>
+        ( ครูผู้ฝึกสอน / ผู้ประเมิน )
+      </div>
+    </div>
+
+    <div style="margin-top: 20px; font-size: 10.5px; color: #94a3b8; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 6px;">
+      เอกสารประเมินผลอัตโนมัติจัดทำโดยระบบ Music Practice Coach • วันที่พิมพ์รายงาน: ${d.printTimestamp}
+    </div>
+  `;
+}
+
+/* =========================================================
+   REPORT MODAL & NATIVE PDF PRINT (100% RELIABLE)
+========================================================= */
+function openReportModal() {
   if (!lastEvaluationData) {
     generateComprehensiveFeedback();
   }
   const d = lastEvaluationData;
+  const htmlContent = buildReportHTML(d);
 
-  // Fill in PDF Template values
-  document.getElementById('pdfInstrumentBadge').innerText = d.instrumentLabel;
-  document.getElementById('pdfSongTitle').innerText = d.songTitle;
-  document.getElementById('pdfDateTime').innerText = d.dateTimeText;
-  document.getElementById('pdfYtUrl').innerText = d.ytUrl;
-  document.getElementById('pdfDuration').innerText = d.durationStr;
-  document.getElementById('pdfScore').innerText = `${d.stabilityScore}/100`;
-  document.getElementById('pdfTotalHits').innerText = d.totalItems;
-  document.getElementById('pdfBpm').innerText = d.avgBpm;
-  document.getElementById('pdfGrade').innerText = d.gradeText;
-  document.getElementById('pdfStrengths').innerText = d.strengths;
-  document.getElementById('pdfImprovements').innerText = d.improvements;
-  document.getElementById('pdfDrills').innerText = d.drill;
-  document.getElementById('pdfPrintTimestamp').innerText = d.printTimestamp;
-
-  if (currentMode === 'guitar') {
-    document.getElementById('pdfCountLabel').innerText = 'จำนวนโน้ตที่ตรวจจับ';
-  } else {
-    document.getElementById('pdfCountLabel').innerText = 'จำนวนจังหวะกลอง (Hits)';
-  }
-
-  const element = document.getElementById('pdfPrintTemplate');
+  // Set to Modal Preview
+  document.getElementById('a4ContentArea').innerHTML = htmlContent;
   
-  // Show template and ensure page scroll is at the very top (0,0) so html2canvas doesn't produce blank top space!
-  element.style.display = 'block';
-  window.scrollTo(0, 0);
+  // Also set to dedicated Print Container
+  document.getElementById('printContainerOnly').innerHTML = `
+    <div class="a4-sheet">${htmlContent}</div>
+  `;
 
-  const cleanSongName = d.songTitle.replace(/[^a-zA-Z0-9ก-๙_-]/g, '_');
-  const filename = `รายงานการซ้อม_${cleanSongName}.pdf`;
+  document.getElementById('reportModal').style.display = 'flex';
+}
 
-  const opt = {
-    margin: [0, 0, 0, 0],
-    filename: filename,
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: {
-      scale: 2,
-      scrollY: 0,
-      scrollX: 0,
-      useCORS: true,
-      logging: false,
-      letterRendering: true,
-      windowWidth: 794
-    },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-  };
+function closeReportModal() {
+  document.getElementById('reportModal').style.display = 'none';
+}
 
-  html2pdf().set(opt).from(element).save().then(() => {
-    element.style.display = 'none';
-  }).catch((err) => {
-    console.error('PDF error, falling back to print:', err);
-    window.print();
-    element.style.display = 'none';
-  });
+function triggerNativePdfSave() {
+  // Uses browser's native Save as PDF / Print with vector quality & zero white screen
+  window.print();
 }
 </script>
 
