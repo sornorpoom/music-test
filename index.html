@@ -513,68 +513,81 @@
     }
 
     /* =========================================================
-       EXACT 1-PAGE A4 PDF PRINT / EXPORT TEMPLATE
+       PERFECT BALANCED 1-PAGE A4 PDF TEMPLATE (TOP-ALIGNED)
     ========================================================= */
     #pdfPrintTemplate {
-      display: none; /* Hidden on normal screen, rendered by html2pdf / print */
-      width: 210mm;
-      min-height: 295mm;
-      max-height: 297mm;
-      padding: 14mm 16mm;
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 794px; /* Exact 210mm at 96 DPI */
+      min-height: 1120px; /* Exact 297mm at 96 DPI */
+      height: 1120px;
+      max-height: 1120px;
+      padding: 28px 34px 24px 34px;
       background: #ffffff;
-      color: #1e293b;
+      color: #0f172a;
       font-family: 'Sarabun', 'Kanit', sans-serif;
       box-sizing: border-box;
-      position: relative;
+      z-index: 999999;
+      margin: 0;
+      overflow: hidden;
     }
 
     .pdf-header {
-      border-bottom: 2px solid #3b82f6;
-      padding-bottom: 10px;
-      margin-bottom: 12px;
+      border-bottom: 2.5px solid #2563eb;
+      padding-bottom: 8px;
+      margin-bottom: 10px;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
     .pdf-title {
-      font-size: 20px;
+      font-size: 19px;
       font-weight: 700;
       color: #1e3a8a;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
     .pdf-subtitle {
-      font-size: 12px;
+      font-size: 11.5px;
       color: #64748b;
       margin-top: 2px;
     }
     .pdf-badge {
       background: #eff6ff;
-      border: 1px solid #bfdbfe;
+      border: 1.5px solid #93c5fd;
       color: #1d4ed8;
       padding: 4px 12px;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 600;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 700;
     }
 
     .pdf-info-table {
       width: 100%;
       border-collapse: collapse;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       font-size: 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      overflow: hidden;
     }
     .pdf-info-table td {
-      padding: 6px 8px;
-      border: 1px solid #e2e8f0;
+      padding: 6px 10px;
+      border: 1px solid #cbd5e1;
+      vertical-align: middle;
     }
     .pdf-info-label {
-      background: #f8fafc;
-      font-weight: 600;
-      color: #475569;
-      width: 20%;
+      background: #f1f5f9;
+      font-weight: 700;
+      color: #334155;
+      width: 18%;
     }
     .pdf-info-val {
       color: #0f172a;
-      width: 30%;
+      width: 32%;
       word-break: break-all;
     }
 
@@ -582,69 +595,68 @@
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 8px;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
     .pdf-stat-box {
       background: #f8fafc;
       border: 1px solid #cbd5e1;
       border-radius: 8px;
-      padding: 8px;
+      padding: 8px 6px;
       text-align: center;
     }
     .pdf-stat-label {
       font-size: 11px;
       color: #64748b;
-      font-weight: 500;
+      font-weight: 600;
     }
     .pdf-stat-num {
-      font-size: 20px;
+      font-size: 21px;
       font-weight: 700;
       color: #1e40af;
       font-family: 'JetBrains Mono', 'Kanit', sans-serif;
+      margin-top: 2px;
     }
 
     .pdf-section-title {
-      font-size: 14px;
+      font-size: 13.5px;
       font-weight: 700;
       color: #1e3a8a;
-      margin-top: 10px;
-      margin-bottom: 6px;
+      margin-top: 8px;
+      margin-bottom: 4px;
       display: flex;
       align-items: center;
       gap: 6px;
     }
     .pdf-box {
       background: #f8fafc;
-      border-left: 4px solid #3b82f6;
+      border-left: 4.5px solid #3b82f6;
       border-radius: 6px;
-      padding: 10px 12px;
-      margin-bottom: 8px;
-      font-size: 12.5px;
+      padding: 9px 12px;
+      margin-bottom: 6px;
+      font-size: 12px;
       line-height: 1.5;
+      color: #1e293b;
     }
-    .pdf-box.green { border-left-color: #10b981; background: #f0fdf4; }
-    .pdf-box.amber { border-left-color: #f59e0b; background: #fffbeb; }
-    .pdf-box.purple { border-left-color: #8b5cf6; background: #faf5ff; }
+    .pdf-box.green { border-left-color: #10b981; background: #f0fdf4; border: 1px solid #bbf7d0; border-left-width: 4.5px; }
+    .pdf-box.amber { border-left-color: #f59e0b; background: #fffbeb; border: 1px solid #fde68a; border-left-width: 4.5px; }
+    .pdf-box.purple { border-left-color: #8b5cf6; background: #faf5ff; border: 1px solid #e9d5ff; border-left-width: 4.5px; }
 
     .pdf-signatures {
-      margin-top: 20px;
+      margin-top: 18px;
       display: flex;
       justify-content: space-between;
       font-size: 12px;
-      padding-top: 10px;
     }
     .pdf-sign-col {
-      width: 45%;
+      width: 44%;
       text-align: center;
-      border-top: 1px dashed #94a3b8;
+      border-top: 1px dashed #64748b;
       padding-top: 8px;
+      color: #334155;
     }
     .pdf-footer-note {
-      position: absolute;
-      bottom: 10mm;
-      left: 16mm;
-      right: 16mm;
-      font-size: 10px;
+      margin-top: 18px;
+      font-size: 10.5px;
       color: #94a3b8;
       text-align: center;
       border-top: 1px solid #e2e8f0;
@@ -904,12 +916,14 @@
 </div>
 
 <!-- =========================================================
-     EXACT 1-PAGE A4 PDF TEMPLATE (RENDERED TO PDF)
+     PERFECT 1-PAGE A4 PDF TEMPLATE (TOP-ALIGNED & BALANCED)
 ========================================================= -->
 <div id="pdfPrintTemplate">
   <div class="pdf-header">
     <div>
-      <div class="pdf-title">🎸🥁 รายงานผลการฝึกซ้อมดนตรี (Music Practice Evaluation Report)</div>
+      <div class="pdf-title">
+        <span>🎸🥁 รายงานผลการฝึกซ้อมดนตรี (Music Practice Evaluation Report)</span>
+      </div>
       <div class="pdf-subtitle">ระบบวิเคราะห์และประเมินทักษะการเล่นดนตรีอัจฉริยะ • Music Practice Coach</div>
     </div>
     <div class="pdf-badge" id="pdfInstrumentBadge">🎸 กีตาร์ (Guitar)</div>
@@ -925,7 +939,7 @@
     </tr>
     <tr>
       <td class="pdf-info-label">ลิงก์คลิปต้นแบบ (URL):</td>
-      <td class="pdf-info-val" id="pdfYtUrl" style="font-size:11px; color:#2563eb;">-</td>
+      <td class="pdf-info-val" id="pdfYtUrl" style="font-size:10.5px; color:#2563eb;">-</td>
       <td class="pdf-info-label">ระยะเวลาในการซ้อม:</td>
       <td class="pdf-info-val" id="pdfDuration">-</td>
     </tr>
@@ -947,7 +961,7 @@
     </div>
     <div class="pdf-stat-box">
       <div class="pdf-stat-label">ระดับผลการประเมิน</div>
-      <div class="pdf-stat-num" id="pdfGrade" style="font-size:16px;">-</div>
+      <div class="pdf-stat-num" id="pdfGrade" style="font-size:15px;">-</div>
     </div>
   </div>
 
@@ -958,7 +972,7 @@
   <div class="pdf-section-title">⚠️ 2. จุดที่ควรปรับปรุงและระมัดระวัง (Areas for Improvement)</div>
   <div class="pdf-box amber" id="pdfImprovements">-</div>
 
-  <div class="pdf-section-title">💡 3. แบบฝึกหัดและเทคนิคแนะนำสำหรับการซ้อมครั้งต่อไป (Recommended Drill)</div>
+  <div class="pdf-section-title">💡 3. แบบฝึกหัดและเทคนิคแนะนำสำหรับการซ้อมครั้งต่อไป (Recommended Drills)</div>
   <div class="pdf-box purple" id="pdfDrills">-</div>
 
   <!-- Signatures & Notes -->
@@ -976,7 +990,7 @@
   </div>
 
   <div class="pdf-footer-note">
-    เอกสารประเมินผลอัตโนมัติจัดทำโดยระบบ Music Practice Coach • พิมพ์เมื่อ: <span id="pdfPrintTimestamp"></span>
+    เอกสารประเมินผลอัตโนมัติจัดทำโดยระบบ Music Practice Coach • วันที่พิมพ์รายงาน: <span id="pdfPrintTimestamp"></span>
   </div>
 </div>
 
@@ -1020,6 +1034,26 @@ let midiAccess = null;
 let midiInputDevices = [];
 
 /* =========================================================
+   THAI DATE FORMATTER HELPER (100% ACCURATE THAI SPELLING)
+========================================================= */
+function formatThaiDateTime(date) {
+  const thaiMonths = [
+    'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
+    'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
+  ];
+  const day = date.getDate();
+  const month = thaiMonths[date.getMonth()];
+  const year = date.getFullYear() + 543;
+  const hours = date.getHours().toString().padStart(2, '0');
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+  return {
+    dateText: `${day} ${month} ${year}`,
+    timeText: `${hours}:${minutes} น.`,
+    fullText: `${day} ${month} ${year} เวลา ${hours}:${minutes} น.`
+  };
+}
+
+/* =========================================================
    YOUTUBE EMBED & CONTROLS
 ========================================================= */
 function onYouTubeIframeAPIReady() {
@@ -1045,10 +1079,7 @@ function loadYouTubeVideo() {
   const placeholder = document.getElementById('ytPlaceholder');
   if (placeholder) placeholder.style.display = 'none';
 
-  // Build origin-safe embedded player to prevent Error 150/153 on local file:// or sandbox
   const ytWrapper = document.getElementById('ytWrapper');
-  
-  // Use direct responsive iframe with safe origins
   ytWrapper.innerHTML = `
     <iframe id="ytIframeEl" 
       src="https://www.youtube.com/embed/${videoId}?enablejsapi=1&playsinline=1&rel=0&modestbranding=1" 
@@ -1057,7 +1088,6 @@ function loadYouTubeVideo() {
     </iframe>
   `;
 
-  // Attach YT.Player to control playback & speed
   if (window.YT && YT.Player) {
     setTimeout(() => {
       try {
@@ -1106,7 +1136,6 @@ function togglePlayVideo() {
       console.log(e);
     }
   } else {
-    // If not loaded yet, prompt user
     if (!currentLoadedVideoId) {
       loadYouTubeVideo();
     }
@@ -1657,13 +1686,13 @@ function generateComprehensiveFeedback() {
 
   if (currentMode === 'guitar') {
     if (totalItems >= 30) {
-      strengths = `ดีดโน้ตได้อย่างต่อเนื่องทั้งหมด ${totalItems} ครั้ง มีความมั่นใจในการกดสายและรักษาความคมชัดของเสียงกังวานได้ดี เสียงไม่อู้อี้`;
+      strengths = `ดีดโน้ตได้อย่างต่อเนื่องทั้งหมด ${totalItems} ครั้ง มีความมั่นใจในการกดสายและรักษาความคมชัดของเสียงกังวานได้ดี เสียงไม่อู้อี้และมีน้ำหนักนิ้วสม่ำเสมอ`;
       improvements = 'รักษาความนิ่งของนิ้วในการเปลี่ยนคอร์ด และคอยตรวจดูจังหวะดีดขึ้น-ลง (Strumming) ให้ลงจังหวะตกพร้อมกับคลิปเพลงต้นฉบับอย่างสม่ำเสมอ';
-      drill = 'ลองปรับความเร็วคลิป YouTube เป็น 0.75x แล้วซ้อมจับคอร์ดท่อน Hook ช้าๆ 3 รอบให้เป๊ะ 100% ก่อนเพิ่มความเร็วเป็นปกติ';
+      drill = 'ลองปรับความเร็วคลิป YouTube เป็น 0.75x แล้วซ้อมจับคอร์ดท่อน Hook ช้าๆ 3 รอบให้แม่นยำ 100% ก่อนเพิ่มความเร็วเป็นปกติ';
     } else if (totalItems >= 10) {
       strengths = 'เริ่มจับตำแหน่งเฟรตและดีดโน้ตออกเสียงได้ยินชัดเจน สามารถเริ่มจับคอร์ดหลักของเพลงได้';
       improvements = 'ระวังเสียงบอร์ดหรือเสียงพร่าที่อาจเกิดจากนิ้วไปแตะโดนสายข้างเคียง แนะนำให้กดนิ้วให้ชิดเฟรตมากขึ้นและยกข้อนิ้วขึ้น';
-      drill = 'ฝึกดีดสายเปิดสลับกับคอร์ดหลักทีละสาย เพื่อตรวจสอบว่าทุกสายเสียงกังวานและไม่บอร์ด';
+      drill = 'ฝึกดีดสายเปิดสลับกับคอร์ดหลักทีละสาย เพื่อตรวจสอบว่าทุกสายเสียงกังวานและไม่เกิดเสียงบอร์ด';
     } else {
       strengths = 'มีความตั้งใจในการเริ่มฝึกซ้อมเพลงและวางฟอร์มมือ';
       improvements = 'ระบบจับเสียงได้ค่อนข้างน้อย อาจเกิดจากดีดเบาเกินไป หรือระยะห่างจากไมโครโฟนไกลเกินไป';
@@ -1690,8 +1719,7 @@ function generateComprehensiveFeedback() {
   document.getElementById('drillText').innerText = drill;
 
   const now = new Date();
-  const dateStr = now.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
-  const timeStr = now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + ' น.';
+  const thaiDateObj = formatThaiDateTime(now);
   const m = Math.floor(practiceDurationSeconds / 60).toString().padStart(2, '0');
   const s = (practiceDurationSeconds % 60).toString().padStart(2, '0');
   const durationStr = `${m} นาที ${s} วินาที`;
@@ -1704,8 +1732,8 @@ function generateComprehensiveFeedback() {
     songTitle: songTitle,
     ytUrl: ytUrl,
     instrumentLabel: instrumentLabel,
-    dateStr: dateStr,
-    timeStr: timeStr,
+    dateTimeText: thaiDateObj.fullText,
+    printTimestamp: thaiDateObj.fullText,
     durationStr: durationStr,
     stabilityScore: stabilityScore,
     totalItems: totalItems,
@@ -1716,7 +1744,6 @@ function generateComprehensiveFeedback() {
     drill: drill
   };
 
-  // Sync to Google Sheets if running inside Google Apps Script
   if (typeof google !== 'undefined' && google.script && google.script.run) {
     document.getElementById('saveStatus').innerText = '⏳ กำลังบันทึกผลลง Google Sheet...';
     google.script.run
@@ -1737,7 +1764,7 @@ function generateComprehensiveFeedback() {
 }
 
 /* =========================================================
-   GENERATE EXACT 1-PAGE A4 PDF
+   GENERATE PERFECT 1-PAGE A4 PDF (TOP ALIGNED & BALANCED)
 ========================================================= */
 function generateA4PDF() {
   if (!lastEvaluationData) {
@@ -1745,10 +1772,10 @@ function generateA4PDF() {
   }
   const d = lastEvaluationData;
 
-  // Fill in PDF Template
+  // Fill in PDF Template values
   document.getElementById('pdfInstrumentBadge').innerText = d.instrumentLabel;
   document.getElementById('pdfSongTitle').innerText = d.songTitle;
-  document.getElementById('pdfDateTime').innerText = `${d.dateStr} เวลา ${d.timeStr}`;
+  document.getElementById('pdfDateTime').innerText = d.dateTimeText;
   document.getElementById('pdfYtUrl').innerText = d.ytUrl;
   document.getElementById('pdfDuration').innerText = d.durationStr;
   document.getElementById('pdfScore').innerText = `${d.stabilityScore}/100`;
@@ -1758,7 +1785,7 @@ function generateA4PDF() {
   document.getElementById('pdfStrengths').innerText = d.strengths;
   document.getElementById('pdfImprovements').innerText = d.improvements;
   document.getElementById('pdfDrills').innerText = d.drill;
-  document.getElementById('pdfPrintTimestamp').innerText = `${d.dateStr} ${d.timeStr}`;
+  document.getElementById('pdfPrintTimestamp').innerText = d.printTimestamp;
 
   if (currentMode === 'guitar') {
     document.getElementById('pdfCountLabel').innerText = 'จำนวนโน้ตที่ตรวจจับ';
@@ -1767,16 +1794,27 @@ function generateA4PDF() {
   }
 
   const element = document.getElementById('pdfPrintTemplate');
+  
+  // Show template and ensure page scroll is at the very top (0,0) so html2canvas doesn't produce blank top space!
   element.style.display = 'block';
+  window.scrollTo(0, 0);
 
   const cleanSongName = d.songTitle.replace(/[^a-zA-Z0-9ก-๙_-]/g, '_');
-  const filename = `รายงานการซ้อม_${cleanSongName}_${new Date().toISOString().slice(0,10)}.pdf`;
+  const filename = `รายงานการซ้อม_${cleanSongName}.pdf`;
 
   const opt = {
     margin: [0, 0, 0, 0],
     filename: filename,
     image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+    html2canvas: {
+      scale: 2,
+      scrollY: 0,
+      scrollX: 0,
+      useCORS: true,
+      logging: false,
+      letterRendering: true,
+      windowWidth: 794
+    },
     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
   };
 
